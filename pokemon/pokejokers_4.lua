@@ -555,7 +555,7 @@ local exeggcute={
 local exeggutor={
   name = "exeggutor", 
   pos = {x = 11, y = 7}, 
-  config = {extra = {mult_mod = 2, Xmult_multi = 1.4, suit = "Hearts", odds = 2}},
+  config = {extra = {mult_mod = 2, Xmult_multi = 1.4, suit = "Hearts", odds = 1}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
     return {vars = {center.ability.extra.mult_mod, center.ability.extra.Xmult_multi, localize(center.ability.extra.suit, 'suits_singular'), 
@@ -604,6 +604,8 @@ local cubone={
   add_to_deck = function(self, card, from_debuff)
     if not from_debuff and #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit then
       local _card = create_card('Item', G.consumeables, nil, nil, nil, nil, 'c_poke_thickclub')
+      local edition = {negative = true}
+      _card:set_edition(edition, true)
       _card:add_to_deck()
       G.consumeables:emplace(_card)
       card_eval_status_text(_card, 'extra', nil, nil, nil, {message = localize('poke_plus_pokeitem'), colour = G.C.FILTER})

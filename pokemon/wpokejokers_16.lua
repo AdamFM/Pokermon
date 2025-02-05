@@ -9,7 +9,7 @@
 local mantyke={
   name = "mantyke",
   pos = {x = 1, y = 5},
-  config = {extra = {chips = 20, Xmult_minus = 0.75, rounds = 2, chip_total = 0,}},
+  config = {extra = {chips = 20, Xmult_minus = 1.25, rounds = 2, chip_total = 0,}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
     info_queue[#info_queue+1] = {set = 'Other', key = 'designed_by', vars = {"FlamingRok"}}

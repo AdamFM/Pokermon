@@ -358,7 +358,7 @@ local squirtle={
 local wartortle={
   name = "wartortle", 
   pos = {x = 7, y = 0},
-  config = {extra = {chips = 0, chip_mod = 4, hands = 1}},
+  config = {extra = {chips = 0, chip_mod = 6, hands = 2}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
 		return {vars = {center.ability.extra.chips, center.ability.extra.chip_mod, center.ability.extra.hands}}
@@ -408,7 +408,7 @@ local wartortle={
 local blastoise={
   name = "blastoise", 
   pos = {x = 8, y = 0},
-  config = {extra = {chips = 72, chip_mod = 32, hands = 1}},
+  config = {extra = {chips = 80, chip_mod = 40, hands = 3}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
 		return {vars = {center.ability.extra.chips, center.ability.extra.chip_mod, center.ability.extra.hands}}
@@ -523,7 +523,7 @@ local butterfree={
 local weedle={
   name = "weedle", 
   pos = {x = 12, y = 0},
-  config = {extra = {chips = 16, rounds = 2}},
+  config = {extra = {chips = 20, rounds = 2}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
 		return {vars = {center.ability.extra.chips, center.ability.extra.rounds}}
@@ -550,7 +550,7 @@ local weedle={
 local kakuna={
   name = "kakuna", 
   pos = {x = 0, y = 1}, 
-  config = {extra = {chips = 32, rounds = 3}},
+  config = {extra = {chips = 40, rounds = 3}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
 		return {vars = {center.ability.extra.chips, center.ability.extra.rounds}}
@@ -577,7 +577,7 @@ local kakuna={
 local beedrill={
   name = "beedrill", 
   pos = {x = 1, y = 1}, 
-  config = {extra = {chips = 80}},
+  config = {extra = {chips = 100}},
   loc_txt = {      
     name = 'Beedrill',      
     text = {
@@ -765,7 +765,7 @@ local raticate={
 local spearow={
   name = "spearow", 
   pos = {x = 7, y = 1},
-  config = {extra = {rounds = 4, card_threshold = 20, cards_scored = 0, upgrade = false}},
+  config = {extra = {rounds = 4, card_threshold = 10, cards_scored = 0, upgrade = false}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
     return {vars = {center.ability.extra.rounds, center.ability.extra.card_threshold, center.ability.extra.cards_scored, center.ability.extra.upgrade and "("..localize('k_active_ex')..")" or ''}}
@@ -806,7 +806,7 @@ local spearow={
 local fearow={
   name = "fearow", 
   pos = {x = 8, y = 1}, 
-  config = {extra = {card_threshold = 15, cards_scored = 0, upgrade = false}},
+  config = {extra = {card_threshold = 5, cards_scored = 0, upgrade = false}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
     return {vars = {center.ability.extra.card_threshold, center.ability.extra.cards_scored, center.ability.extra.upgrade and "("..localize('k_active_ex')..")" or ''}}

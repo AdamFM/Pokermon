@@ -184,7 +184,7 @@ local clefairy={
 local clefable={
   name = "clefable", 
   pos = {x = 9, y = 2},
-  config = {extra = {mult_mod = 1, suit = "Clubs", clubs_scored = 0}},
+  config = {extra = {mult_mod = 2, suit = "Clubs", clubs_scored = 0}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
     return {vars = {center.ability.extra.mult_mod, localize(center.ability.extra.suit, 'suits_singular'), center.ability.extra.mult_mod * center.ability.extra.clubs_scored}}

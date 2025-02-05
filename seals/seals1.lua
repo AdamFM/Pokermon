@@ -20,6 +20,7 @@ local pink_seal = {
 					if #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit then
             local energy_types = {}
             local _card = nil
+            local edition = {negative = true}
             for l, v in pairs(G.jokers.cards) do
               local match = matching_energy(v)
               if match then
@@ -32,6 +33,7 @@ local pink_seal = {
             else
               _card = create_card("Energy", G.consumeables, nil, nil, nil, nil, nil, nil)
             end
+            _card:set_edition(edition, true)
 						_card:add_to_deck()
 						G.consumeables:emplace(_card)
 						card:juice_up()
@@ -61,8 +63,10 @@ local silver = {
         card.ability.discarded = true
         G.E_MANAGER:add_event(Event({
           func = function()
+            local edition = {negative = true}
             if #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit then
               local _card = create_card("Item", G.consumeables, nil, nil, nil, nil, nil, nil)
+              _card:set_edition(edition, true)
               _card:add_to_deck()
               G.consumeables:emplace(_card)
               card:juice_up()

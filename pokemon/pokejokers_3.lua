@@ -427,7 +427,7 @@ local weepinbell={
 local victreebel={
   name = "victreebel", 
   pos = {x = 5, y = 5},
-  config = {extra = {chips = 20, retriggers = 1, chips2 = 5}},
+  config = {extra = {chips = 20, retriggers = 1, chips2 = 10}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
 		return {vars = {center.ability.extra.chips}}

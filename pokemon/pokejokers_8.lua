@@ -346,7 +346,7 @@ local stantler={
 -- Tyrogue 236
 local tyrogue={
   name = "tyrogue",
-  config = {extra = {Xmult_minus = 0.5,rounds = 2,}},
+  config = {extra = {Xmult_minus = 1.2,rounds = 2,}},
   pos = {x = 4, y = 8}, 
   rarity = 2, 
   cost = 4, 
@@ -458,7 +458,7 @@ local hitmontop={
 local smoochum ={
   name = "smoochum",
   pos = {x = 6, y = 8},
-  config = {extra = {Xmult_minus = 0.75,rounds = 2,}},
+  config = {extra = {Xmult_minus = 1.25,rounds = 2,}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
     info_queue[#info_queue+1] = {set = 'Other', key = 'baby'}
@@ -502,7 +502,7 @@ local smoochum ={
 local elekid ={
   name = "elekid",
   pos = {x = 7, y = 8},
-  config = {extra = {Xmult_minus = 0.75,rounds = 2,}},
+  config = {extra = {Xmult_minus = 1.25,rounds = 2,}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
     info_queue[#info_queue+1] = {set = 'Other', key = 'baby'}
@@ -546,7 +546,7 @@ local elekid ={
 local magby={
   name = "magby",
   pos = {x = 8, y = 8},
-  config = {extra = {Xmult_minus = 0.75, d_size = 1, rounds = 2,}},
+  config = {extra = {Xmult_minus = 1.25, d_size = 1, rounds = 2,}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
     info_queue[#info_queue+1] = {set = 'Other', key = 'baby'}

@@ -2,7 +2,7 @@
 local starmie={
   name = "starmie", 
   pos = {x = 3, y = 9},
-  config = {extra = {mult = 4, money_mod = 1, suit = "Diamonds"}},
+  config = {extra = {mult = 5, money_mod = 2, suit = "Diamonds"}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
     return {vars = {center.ability.extra.mult, center.ability.extra.money_mod, localize(center.ability.extra.suit, 'suits_singular')}}
@@ -992,6 +992,8 @@ local snorlax={
   add_to_deck = function(self, card, from_debuff)
     if not from_debuff and #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit then
       local _card = create_card('Item', G.consumeables, nil, nil, nil, nil, 'c_poke_leftovers')
+      local edition = {negative = true}
+      _card:set_edition(edition, true)
       _card:add_to_deck()
       G.consumeables:emplace(_card)
       card_eval_status_text(_card, 'extra', nil, nil, nil, {message = localize('poke_plus_pokeitem'), colour = G.C.FILTER})
@@ -1170,7 +1172,7 @@ local dratini={
 local dragonair={
   name = "dragonair", 
   pos = {x = 8, y = 11}, 
-  config = {extra = {mult = 0, mult_mod = 1, size = 2}},
+  config = {extra = {mult = 0, mult_mod = 2, size = 2}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
     return {vars = {center.ability.extra.mult, center.ability.extra.mult_mod, center.ability.extra.size}}
@@ -1201,7 +1203,7 @@ local dragonair={
 local dragonite={
   name = "dragonite", 
   pos = {x = 9, y = 11},
-  config = {extra = {mult = 30, retriggers = 5}},
+  config = {extra = {mult = 35, retriggers = 5}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
     return {vars = {center.ability.extra.mult, center.ability.extra.retriggers}} 

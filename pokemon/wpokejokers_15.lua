@@ -20,7 +20,7 @@
 local mimejr={
   name = "mimejr",
   pos = {x = 10, y = 3},
-  config = {extra = {Xmult_minus = 0.5,rounds = 2,}},
+  config = {extra = {Xmult_minus = 1.1,rounds = 2,}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
     info_queue[#info_queue+1] = {set = 'Other', key = 'baby'}
@@ -63,7 +63,7 @@ local mimejr={
 local happiny={
   name = "happiny",
   pos = {x = 11, y = 3},
-  config = {extra = {Xmult_minus = 0.5,rounds = 2,}},
+  config = {extra = {Xmult_minus = 1.1,rounds = 2,}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
     info_queue[#info_queue+1] = {set = 'Other', key = 'baby'}
@@ -112,7 +112,7 @@ local happiny={
 local munchlax={
   name = "munchlax",
   pos = {x = 3, y = 4},
-  config = {extra = {Xmult_minus = 0.5,rounds = 2,}},
+  config = {extra = {Xmult_minus = 1.1,rounds = 2,}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
     info_queue[#info_queue+1] = {set = 'Other', key = 'baby'}

@@ -95,7 +95,7 @@ local tall_grass={
         if has_wild or pseudorandom('tallgrass') < G.GAME.probabilities.normal/card.ability.extra.odds then
           G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.4, func = function()
             play_sound('timpani')
-            local _card = create_random_poke_joker("tallgrass", nil, "common")
+            local _card = create_random_poke_joker("masterball", "Legendary")
             _card:add_to_deck()
             G.jokers:emplace(_card)
             return true end }))

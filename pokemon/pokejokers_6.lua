@@ -233,7 +233,7 @@ local crobat={
 local pichu={
   name = "pichu", 
   pos = {x = 0, y = 2},
-  config = {extra={money = 10, Xmult_minus = 0.75, rounds = 2}},
+  config = {extra={money = 10, Xmult_minus = 1.25, rounds = 2}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
     info_queue[#info_queue+1] = {set = 'Other', key = 'baby'}
@@ -266,7 +266,7 @@ local pichu={
 local cleffa={
   name = "cleffa",
   pos = {x = 1, y = 2},
-  config = {extra = {Xmult_minus = 0.75,rounds = 2,}},
+  config = {extra = {Xmult_minus = 1.25,rounds = 2,}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
     info_queue[#info_queue+1] = {set = 'Other', key = 'baby'}
@@ -307,7 +307,7 @@ local cleffa={
 local igglybuff={
   name = "igglybuff",
   pos = {x = 2, y = 2},
-  config = {extra = {Xmult_minus = 0.75,rounds = 2,}},
+  config = {extra = {Xmult_minus = 1.25,rounds = 2,}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
     info_queue[#info_queue+1] = {set = 'Other', key = 'baby'}
