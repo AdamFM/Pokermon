@@ -31,21 +31,13 @@ local gimmighoul={
         card = card
       }
     end
-    if context.skipping_booster then
+    if context.skipping_booster and G.shop_jokers and G.shop_jokers.cards then
         local temp_card = {set = "Joker", area = G.shop_jokers, key = "j_poke_gimmighoulr"}
         local new_card = SMODS.create_card(temp_card)
         local edition = {negative = true}
         new_card:set_edition(edition, true)
-        new_card.states.visible = false
-        G.shop_jokers:emplace(new_card)
-        new_card:start_materialize()
+        poke_add_shop_card(new_card, card)
         new_card.cost = 0
-        create_shop_card_ui(new_card)
-        if (SMODS.Mods["Talisman"] or {}).can_load then
-          if Talisman.config_file.disable_anims then 
-            new_card.states.visible = true
-          end
-        end
     end
     return scaling_evo(self, card, context, "j_poke_gholdengo", card.ability.extra.money_seen, card.ability.extra.money_goal)
   end,
@@ -106,7 +98,7 @@ local gimmighoulr={
 local gholdengo={
   name = "gholdengo",
   pos = {x = 2, y = 12},
-  config = {extra = {Xmult = 1, money_minus = 3, oXmult = 1, Xmult_multi = 1.5, future_dollars = 0}},
+  config = {extra = {Xmult = 1, money_minus = 1, oXmult = 1, Xmult_multi = 1.5, future_dollars = 0}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
     return {vars = {center.ability.extra.Xmult, center.ability.extra.money_minus, center.ability.extra.Xmult_multi}}
@@ -135,7 +127,15 @@ local gholdengo={
     if context.individual and not context.end_of_round and context.cardarea == G.play and context.other_card.ability.name == 'Gold Card' then
       card.ability.extra.future_dollars = card.ability.extra.future_dollars - card.ability.extra.money_minus
       if card.ability.extra.future_dollars >= 0 then
-        card.ability.extra.Xmult = card.ability.extra.Xmult * card.ability.extra.Xmult_multi
+        if (SMODS.Mods["Talisman"] or {}).can_load then
+          if to_big(card.ability.extra.Xmult) >= to_big(1e300) then
+            card.ability.extra.Xmult = to_number(to_big(card.ability.extra.Xmult) * to_big(card.ability.extra.Xmult_multi))
+          else
+            card.ability.extra.Xmult = card.ability.extra.Xmult * card.ability.extra.Xmult_multi
+          end
+        else
+          card.ability.extra.Xmult = card.ability.extra.Xmult * card.ability.extra.Xmult_multi
+        end
         return {
           dollars = -card.ability.extra.money_minus,
           card = card

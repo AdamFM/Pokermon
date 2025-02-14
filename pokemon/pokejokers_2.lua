@@ -2,10 +2,10 @@
 local nidoqueen={
   name = "nidoqueen", 
   pos = {x = 4, y = 2}, 
-  config = {extra = {chips = 85, chip_total = 0, h_size = 1}},
+  config = {extra = {chips = 85, chip_total = 0, h_size = 1, Xmult_mod = 0.5}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
-    return {vars = {center.ability.extra.chips, center.ability.extra.h_size}}
+    return {vars = {center.ability.extra.chips, center.ability.extra.h_size, center.ability.extra.Xmult_mod}}
   end,
   rarity = "poke_safari", 
   cost = 10, 
@@ -24,9 +24,19 @@ local nidoqueen={
           }
         else
             card.ability.extra.chip_total = card.ability.extra.chip_total + card.ability.extra.chips
+            local xchips = 1 + card.ability.extra.Xmult_mod * 2
+            local chips = nil
+            local msg = localize{type = 'variable', key = 'a_xchips', vars = {xchips}}
+            -- if steammodded isn't updated
+            if msg == "ERROR" then
+              msg = "X"..tostring(xchips).." Chips"
+              chips = (xchips - 1) * hand_chips
+              xchips = nil
+            end
             return {
               message = localize{type = 'variable', key = 'a_chips', vars = {card.ability.extra.chips}}, 
               colour = G.C.CHIPS,
+              Xchip_mod = xchips,
               card = card,
             }
         end
@@ -38,6 +48,8 @@ local nidoqueen={
       if chip_temp_total > 0 then
         return {
           message = localize('poke_nido_ex'),
+          colour = G.C.CHIPS,
+          Xchip_mod = xchips,
           chip_mod = chip_temp_total
         }
       end
@@ -119,10 +131,10 @@ local nidorino={
 local nidoking={
   name = "nidoking", 
   pos = {x = 7, y = 2},
-  config = {extra = {mult = 18, h_size = 1}},
+  config = {extra = {mult = 18, h_size = 2, Xmult_multi = 1.5}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
-    return {vars = {center.ability.extra.mult, center.ability.extra.h_size}}
+    return {vars = {center.ability.extra.mult, center.ability.extra.h_size, center.ability.extra.Xmult_multi}}
   end,
   rarity = "poke_safari", 
   cost = 10, 
@@ -141,6 +153,7 @@ local nidoking={
       else
           return {
               h_mult = card.ability.extra.mult,
+              x_mult = card.ability.extra.Xmult_multi,
               card = card
           }
       end
@@ -292,7 +305,7 @@ local ninetales={
     end
   end,
   add_to_deck = function(self, card, from_debuff)
-    if #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit and not from_debuff then
+    if not from_debuff then
       local _card = create_card('Spectral', G.consumeables, nil, nil, nil, nil, 'c_medium')
       local edition = {negative = true}
       _card:set_edition(edition, true)
@@ -333,7 +346,7 @@ local jigglypuff={
 local wigglytuff={
   name = "wigglytuff", 
   pos = {x = 0, y = 3},
-  config = {extra = {mult = 2, chips = 30, suit = "Spades"}},
+  config = {extra = {mult = 3, chips = 50, suit = "Spades"}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
     return {vars = {center.ability.extra.mult, center.ability.extra.chips, localize(center.ability.extra.suit, 'suits_singular')}}
@@ -632,7 +645,7 @@ local paras={
 local parasect={
   name = "parasect", 
   pos = {x = 7, y = 3},
-   config = {extra = {mult = 0, mult_mod = 3, mult_mod2 = 2}},
+   config = {extra = {mult = 0, mult_mod = 3, mult_mod2 = 1}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
 		return {vars = {center.ability.extra.mult, center.ability.extra.mult_mod, center.ability.extra.mult_mod2}}
@@ -833,7 +846,7 @@ local meowth={
 		return {vars = {center.ability.extra.money, center.ability.extra.rounds}}
   end,
   rarity = 1, 
-  cost = 6, 
+  cost = 5, 
   stage = "Basic",
   ptype = "Colorless",
   atlas = "Pokedex1",
@@ -873,7 +886,7 @@ local psyduck={
     return {vars = {center.ability.extra.money, center.ability.extra.rounds}}
   end,
   rarity = 1, 
-  cost = 6, 
+  cost = 5, 
   stage = "Basic", 
   ptype = "Water",
   atlas = "Pokedex1",
@@ -881,11 +894,9 @@ local psyduck={
   calculate = function(self, card, context)
     if context.cardarea == G.jokers and context.scoring_hand and context.full_hand and #context.full_hand == 1 and context.scoring_hand[1]:is_face() then
       if context.joker_main then
-        local earned = ease_poke_dollars(card, "psyduck", card.ability.extra.money)
+        local earned = ease_poke_dollars(card, "psyduck", card.ability.extra.money, true)
         return {
-          message = localize('$')..earned,
-          dollars = earned,
-          colour = G.C.MONEY
+          dollars = earned
         }
       end
     end
@@ -924,11 +935,9 @@ local golduck={
         }
       end
       if context.joker_main then
-        local earned = ease_poke_dollars(card, "golduck", card.ability.extra.money)
+        local earned = ease_poke_dollars(card, "golduck", card.ability.extra.money, true)
         return {
-          message = localize('$')..earned,
-          dollars = earned,
-          colour = G.C.MONEY
+          dollars = earned
         }
       end
     end
@@ -952,7 +961,8 @@ local mankey={
     if context.individual and context.cardarea == G.play and not context.other_card.debuff then
       if context.other_card:get_id() == 2 or 
          context.other_card:get_id() == 3 or 
-         context.other_card:get_id() == 5 then
+         context.other_card:get_id() == 5 or
+         context.other_card:get_id() == 7 then
         return {
             chips = card.ability.extra.chips,
             mult = card.ability.extra.mult,
@@ -966,7 +976,7 @@ local mankey={
 local primeape={
   name = "primeape", 
   pos = {x = 4, y = 4}, 
-  config = {extra = {mult = 7, chips = 11, primes_played = 0}},
+  config = {extra = {mult = 5, chips = 7, primes_played = 0}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
     return {vars = {center.ability.extra.mult, center.ability.extra.chips, center.ability.extra.primes_played}}
@@ -981,7 +991,8 @@ local primeape={
     if context.individual and context.cardarea == G.play and not context.other_card.debuff then
       if context.other_card:get_id() == 2 or 
          context.other_card:get_id() == 3 or 
-         context.other_card:get_id() == 5 then
+         context.other_card:get_id() == 5 or
+         context.other_card:get_id() == 7 then
         card.ability.extra.primes_played = card.ability.extra.primes_played + 1
         return {
             chips = card.ability.extra.chips,
@@ -1053,7 +1064,6 @@ local arcanine={
         _card:add_to_deck()
         G.consumeables:emplace(_card)
         card_eval_status_text(_card, 'extra', nil, nil, nil, {message = localize('k_plus_tarot'), colour = G.C.PURPLE})
-        return true
       end
     end
   end,

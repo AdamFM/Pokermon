@@ -37,7 +37,7 @@ family = {
     {"seel","dewgong"},
     {"grimer","muk"},
     {"shellder","cloyster"},
-    {"gastly","haunter","gengar"},
+    {"mega_gengar","gastly","haunter","gengar"},
     {"onix","steelix"},
     {"drowzee","hypno"},
     {"krabby","kingler"},
@@ -66,12 +66,14 @@ family = {
     {"dratini","dragonair","dragonite"},
     {"tyrogue", "hitmonlee", "hitmonchan", "hitmontop"},
     {"feebas", "milotic"},
+    {"snorunt", "glalie", "froslass"},
     {"beldum", "metang", "metagross"},
     {"sentret", "furret"},
     {"mantyke", "mantine"},
     {"treecko", "grovyle", "sceptile"},
     {"torchic", "combusken", "blaziken"},
     {"mudkip", "marshtomp", "swampert"},
+    {"aron","lairon","aggron"},
     {"buizel", "floatzel"},
     {"elgyem", "beheeyem"},
     {"litwick", "lampent", "chandelure"},
@@ -579,7 +581,7 @@ evo_item_use = function(self, card, area, copier)
         end
       end
     end
-    return true
+    return evolve
 end
 
 highlighted_evo_item = function(self, card, area, copier)
@@ -602,7 +604,18 @@ highlighted_evo_item = function(self, card, area, copier)
       local eval = function(choice) return not choice.REMOVED end
       juice_card_until(choice, eval, true)
     end
-    return true
+    return evolve
+end
+
+evo_item_use_total = function(self, card, area, copier)
+    local evolve = nil
+    if G.jokers.highlighted and #G.jokers.highlighted == 1 then
+      evolve = highlighted_evo_item(self, card, area, copier)
+    end
+    if not evolve then
+      evolve = evo_item_use(self, card, area, copier)
+    end
+    return evolve
 end
 
 evo_item_in_pool = function(self)
@@ -756,6 +769,7 @@ end
 get_poke_allowed = function(key)
   local banned_keys = {"taurosh", "dreepy_dart", "gimmighoulr"}
   local allowed = true
+  if string.sub(key,11) == "j_poke_mega" then return false end
   
   for i=1, #banned_keys do
     if "j_poke_"..banned_keys[i] == key then
@@ -809,6 +823,8 @@ get_poke_target_card_ranks = function(seed, num, default, use_deck)
     local args = {array = random, amt = num}
     target_ranks = pseudorandom_multi(args)
   end
+  local sort_function = function(card1, card2) return card1.id < card2.id end
+  table.sort(target_ranks, sort_function)
   return target_ranks
 end
 
@@ -880,12 +896,12 @@ poke_total_chips = function(card)
   return total_chips
 end
 
-poke_drain = function(card, target, amount)
+poke_drain = function(card, target, amount, one_way)
   local amt = amount
   local amt_drained = 0
   if target.sell_cost == 1 then return end
   target.ability.extra_value = target.ability.extra_value or 0
-  if target.sell_cost < amt then
+  if target.sell_cost <= amt then
     amt_drained = amt_drained + target.sell_cost - 1
     target.ability.extra_value = target.ability.extra_value - amt_drained
   else
@@ -894,11 +910,13 @@ poke_drain = function(card, target, amount)
   end
   
   if amt_drained > 0 then
-    card.ability.extra_value = card.ability.extra_value or 0
-    card.ability.extra_value = card.ability.extra_value + amt_drained
     target:set_cost()
-    card:set_cost()
     card_eval_status_text(target, 'extra', nil, nil, nil, {message = localize('poke_val_down'), colour = G.C.RED})
-    card_eval_status_text(card, 'extra', nil, nil, nil, {message = localize('k_val_up')})
+    if not one_way then
+      card.ability.extra_value = card.ability.extra_value or 0
+      card.ability.extra_value = card.ability.extra_value + amt_drained
+      card:set_cost()
+      card_eval_status_text(card, 'extra', nil, nil, nil, {message = localize('k_val_up')})
+    end    
   end
 end

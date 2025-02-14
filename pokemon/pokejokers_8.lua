@@ -212,7 +212,7 @@ local mantine={
 local kingdra={
   name = "kingdra", 
   pos = {x = 8, y = 7},
-  config = {extra = {mult = 0, mult_mod = 1, Xmult = 1, Xmult_mod = .05}},
+  config = {extra = {mult = 0, mult_mod = 1, Xmult = 1, Xmult_mod = .25}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
     return {vars = {center.ability.extra.mult, center.ability.extra.mult_mod, center.ability.extra.Xmult, center.ability.extra.Xmult_mod}}
@@ -300,7 +300,7 @@ local porygon2={
     end
   end,
   remove_from_deck = function(self, card, from_debuff)
-    if not from_debuff then
+    if not from_debuff or (card.ability.perishable and card.ability.perish_tally <= 0) then
       if not G.GAME.energy_plus then
         G.GAME.energy_plus = 0
       else

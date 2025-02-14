@@ -2,7 +2,7 @@
 local starmie={
   name = "starmie", 
   pos = {x = 3, y = 9},
-  config = {extra = {mult = 5, money_mod = 2, suit = "Diamonds"}},
+  config = {extra = {mult = 4, money_mod = 2, suit = "Diamonds"}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
     return {vars = {center.ability.extra.mult, center.ability.extra.money_mod, localize(center.ability.extra.suit, 'suits_singular')}}
@@ -42,7 +42,7 @@ local mrmime={
   blueprint_compat = true,
   calculate = function(self, card, context)
     if context.repetition and context.cardarea == G.hand then
-      if (context.other_card == G.hand.cards[1]) and (next(context.card_effects[1]) or #context.card_effects > 1) then
+      if (next(context.card_effects[1]) or #context.card_effects > 1) then
         return {
             message = localize('k_again_ex'),
             repetitions = card.ability.extra.retriggers,
@@ -268,18 +268,8 @@ local tauros={
     if context.reroll_shop and not context.blueprint then
       if pseudorandom('tauros') < G.GAME.probabilities.normal/card.ability.extra.odds then
         local temp_card = {set = "Joker", area = G.shop_jokers, key = "j_poke_taurosh"}
-        local new_card = SMODS.create_card(temp_card)
-        new_card.states.visible = false
-        G.shop_jokers:emplace(new_card)
-        new_card:start_materialize()
-        new_card:set_cost()
-        create_shop_card_ui(new_card)
-        
-        if (SMODS.Mods["Talisman"] or {}).can_load then
-          if Talisman.config_file.disable_anims then 
-            new_card.states.visible = true
-          end
-        end
+        local add_card = SMODS.create_card(temp_card)
+        poke_add_shop_card(add_card, card)
       end
     end
   end
@@ -430,8 +420,8 @@ local ditto={
               local card = copy_card(chosen_joker, nil, nil, nil, chosen_joker.edition and chosen_joker.edition.negative)
               card:set_eternal(false)
               --Setting it directly to overrule perishiable compatibility
-              card.ability.perishable = true
-              card.ability.perish_tally = G.GAME.perishable_rounds
+              -- card.ability.perishable = true
+              -- card.ability.perish_tally = G.GAME.perishable_rounds
               apply_type_sticker(card, "Colorless")
               card:add_to_deck()
               G.jokers:emplace(card)
@@ -563,7 +553,7 @@ local jolteon={
 local flareon={
   name = "flareon", 
   pos = {x = 6, y = 10},
-  config = {extra = {Xmult = 1, Xmult_mod = .16, rerolls = 0}}, 
+  config = {extra = {Xmult = 1, Xmult_mod = .16, rerolls = 1}}, 
   blueprint_compat = true,
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
@@ -586,7 +576,7 @@ local flareon={
         end
       else
         card_eval_status_text(card, 'extra', nil, nil, nil, {message = "3/3", colour = G.C.XMULT})
-        card.ability.extra.rerolls = 0
+        card.ability.extra.rerolls = 1
         card.ability.extra.Xmult = card.ability.extra.Xmult + card.ability.extra.Xmult_mod
         card_eval_status_text(card, 'extra', nil, nil, nil, {message = localize("k_upgrade_ex")})
       end
@@ -647,7 +637,7 @@ local porygon={
     end
   end,
   remove_from_deck = function(self, card, from_debuff)
-    if not from_debuff then
+    if not from_debuff or (card.ability.perishable and card.ability.perish_tally <= 0) then
       if not G.GAME.energy_plus then
         G.GAME.energy_plus = 0
       else
@@ -841,7 +831,7 @@ local kabuto={
 local kabutops={
   name = "kabutops", 
   pos = {x = 11, y = 10}, 
-  config = {extra = {rank = "2", chips1 = 40, chips2 = 4, chips3 = 80, retriggers = 1}},
+  config = {extra = {rank = "2", chips1 = 40, chips2 = 4, chips3 = 80, retriggers = 2}},
   loc_vars = function(self, info_queue, center)
    type_tooltip(self, info_queue, center)
    info_queue[#info_queue+1] = {set = 'Other', key = 'ancient', vars = {localize(center.ability.extra.rank, 'ranks')}}
@@ -1203,7 +1193,7 @@ local dragonair={
 local dragonite={
   name = "dragonite", 
   pos = {x = 9, y = 11},
-  config = {extra = {mult = 35, retriggers = 5}},
+  config = {extra = {mult = 30, retriggers = 5}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
     return {vars = {center.ability.extra.mult, center.ability.extra.retriggers}} 

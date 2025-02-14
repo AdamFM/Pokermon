@@ -183,7 +183,7 @@ SMODS.current_mod.extra_tabs = function()
               {
                 n = G.UIT.T,
                 config = {
-                  text = "GayCoonie, Joey J. Jester, Larantula, The Kuro",
+                  text = "GayCoonie, Joey J. Jester, Larantula, The Kuro, Lemmanade",
                   shadow = true,
                   scale = scale * 0.8,
                   colour = G.C.BLUE
@@ -210,7 +210,7 @@ SMODS.current_mod.extra_tabs = function()
               {
                 n = G.UIT.T,
                 config = {
-                  text = "Yamper, MyDude, Numbuh 214, SMG9000, Sonfive",
+                  text = "Yamper, MyDude, Numbuh 214, SMG9000, Sonfive, PrincessRoxie",
                   shadow = true,
                   scale = scale * 0.8,
                   colour = G.C.BLUE
@@ -264,7 +264,7 @@ SMODS.current_mod.extra_tabs = function()
               {
                 n = G.UIT.T,
                 config = {
-                  text = "SDM0, Jevonnissocoolman, Ishtech, Fem, MathIsFun_",
+                  text = "SDM0, Jevonnissocoolman, Ishtech, Fem, MathIsFun_, Kek",
                   shadow = true,
                   scale = scale * 0.8,
                   colour = G.C.BLUE
@@ -426,7 +426,7 @@ end
 local G_UIDEF_use_and_sell_buttons_ref=G.UIDEF.use_and_sell_buttons
     function G.UIDEF.use_and_sell_buttons(card)
         if (card.area == G.pack_cards and G.pack_cards) and card.ability.consumeable then --Add a use button
-            if G.STATE == G.STATES.SMODS_BOOSTER_OPENED and SMODS.OPENED_BOOSTER.label:find("Pocket") then
+            if (G.STATE == G.STATES.SMODS_BOOSTER_OPENED and SMODS.OPENED_BOOSTER.label:find("Pocket")) or (G.GAME.poke_save_all) then
                 return {
                     n=G.UIT.ROOT, config = {padding = -0.1,  colour = G.C.CLEAR}, nodes={
                       {n=G.UIT.R, config={ref_table = card, r = 0.08, padding = 0.1, align = "bm", minw = 0.5*card.T.w - 0.15, minh = 0.7*card.T.h, maxw = 0.7*card.T.w - 0.15, hover = true, shadow = true, colour = G.C.UI.BACKGROUND_INACTIVE, one_press = true, button = 'use_card', func = 'can_use_consumeable'}, nodes={
@@ -562,7 +562,7 @@ local controller_queue_R_cursor_press_ref = Controller.queue_R_cursor_press
 function Controller:queue_R_cursor_press(x, y)
     controller_queue_R_cursor_press_ref(self, x, y)
     local clicked = self.hovering.target or self.focused.target
-    if clicked and type(clicked) == 'table' and clicked.config and type(clicked.config) == 'table' and clicked.config.center then
+    if clicked and type(clicked) == 'table' and clicked.config and type(clicked.config) == 'table' and clicked.config.center and clicked.facing ~= 'back' then
       if clicked.config.center.stage then
         local menu = G.SETTINGS.paused and 'pokedex_back' or nil
         if menu and G.OVERLAY_MENU:get_UIE_by_ID('cycle_shoulders') then poke_joker_page = G.OVERLAY_MENU:get_UIE_by_ID('cycle_shoulders').children[1].children[1].config.ref_table.current_option end
@@ -578,10 +578,11 @@ function Controller:capture_focused_input(button, input_type, dt)
   if self.focused then
     local clicked = self.focused.target
     if input_type == 'press' and button == 'rightstick' then
-      if clicked and type(clicked) == 'table' and clicked.config and type(clicked.config) == 'table' and clicked.config.center then
+      if clicked and type(clicked) == 'table' and clicked.config and type(clicked.config) == 'table' and clicked.config.center and clicked.facing ~= 'back' then
         if clicked.config.center.stage then
           local menu = G.SETTINGS.paused and 'pokedex_back' or nil
           if menu and G.OVERLAY_MENU:get_UIE_by_ID('cycle_shoulders') then poke_joker_page = G.OVERLAY_MENU:get_UIE_by_ID('cycle_shoulders').children[1].children[1].config.ref_table.current_option end
+          G.SETTINGS.paused = true
           G.FUNCS.overlay_menu{
             definition = create_UIBox_pokedex_jokers(get_family_keys(clicked.config.center.name), menu),
           }

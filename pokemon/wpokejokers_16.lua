@@ -290,7 +290,7 @@ local electivire={
 local magmortar={
   name = "magmortar", 
   pos = {x = 10, y = 5}, 
-  config = {extra = {mult = 0, mult_mod = 2, Xmult = 1, Xmult_mod = 0.02}},
+  config = {extra = {mult = 0, mult_mod = 2, Xmult = 1, Xmult_mod = 0.2}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
     return {vars = {center.ability.extra.mult, center.ability.extra.mult_mod, center.ability.extra.Xmult, center.ability.extra.Xmult_mod}}
@@ -377,11 +377,10 @@ local leafeon={
 local glaceon={
   name = "glaceon", 
   pos = {x = 0, y = 6},
-  config = {extra = {rerolls = 1, odds = 4, rerolls_used = 0}},
+  config = {extra = {odds = 5}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
-    return {vars = {center.ability.extra.rerolls, ''..(G.GAME and G.GAME.probabilities.normal or 1), center.ability.extra.odds, 
-                    math.max(center.ability.extra.rerolls - center.ability.extra.rerolls_used, 0)}}
+    return {vars = {''..(G.GAME and G.GAME.probabilities.normal or 1), center.ability.extra.odds}}
   end,
   rarity = "poke_safari", 
   cost = 7, 
@@ -391,76 +390,14 @@ local glaceon={
   blueprint_compat = false,
   calculate = function(self, card, context)
     if context.reroll_shop and not context.blueprint then
-      card.ability.extra.rerolls_used = card.ability.extra.rerolls_used + 1
-      if card.ability.extra.rerolls - card.ability.extra.rerolls_used > 0 then
-        if pseudorandom('glaceon') < G.GAME.probabilities.normal/card.ability.extra.odds then
-          G.E_MANAGER:add_event(Event({
-              blockable = false,
-              func = (function()
-                      card:juice_up()
-                      play_sound('glass'..math.random(1, 6), math.random()*0.2 + 0.9,0.5)
-                      play_sound('generic1', math.random()*0.2 + 0.9,0.5)
-                  return true end)
-          }))
-          G.GAME.current_round.free_rerolls = G.GAME.current_round.free_rerolls - math.max(card.ability.extra.rerolls - card.ability.extra.rerolls_used, 0)
-          if G.GAME.current_round.free_rerolls < 0 then G.GAME.current_round.free_rerolls = 0 end
-          card.ability.extra.rerolls_used = card.ability.extra.rerolls
-          calculate_reroll_cost(true)
-        end
+      if pseudorandom('glaceon') < G.GAME.probabilities.normal/card.ability.extra.odds then
+        local card_to_copy = pseudorandom_element(G.deck.cards, pseudoseed('deckglaceon'))
+        local copy = copy_card(card_to_copy, nil, nil, G.playing_card)
+        copy:set_ability(G.P_CENTERS.m_glass, nil, true)
+        poke_add_shop_card(copy, card)
       end
     end
   end,
-  add_to_deck = function(self, card, from_debuff)
-    if not from_debuff then
-      G.GAME.current_round.free_rerolls = G.GAME.current_round.free_rerolls + card.ability.extra.rerolls
-      calculate_reroll_cost(true)
-    end
-  end,
-  remove_from_deck = function(self, card, from_debuff)
-    if not from_debuff then
-      G.GAME.current_round.free_rerolls = G.GAME.current_round.free_rerolls - card.ability.extra.rerolls
-      if G.GAME.current_round.free_rerolls < 0 then G.GAME.current_round.free_rerolls = 0 end
-      calculate_reroll_cost(true)
-    end
-  end,
-  update = function(self, card, dt)
-    if G.STAGE == G.STAGES.RUN then
-      local glass_count = 0
-      for k, v in pairs(G.playing_cards) do
-        if v.ability.name == 'Glass Card' then
-          glass_count = glass_count + 1
-        end
-      end
-
-      local rerolls = math.max(glass_count, 1)
-
-      if rerolls > card.ability.extra.rerolls then
-        G.GAME.current_round.free_rerolls = G.GAME.current_round.free_rerolls + (rerolls - card.ability.extra.rerolls)
-        calculate_reroll_cost(true)
-      elseif rerolls < card.ability.extra.rerolls then
-        G.GAME.current_round.free_rerolls = G.GAME.current_round.free_rerolls - (card.ability.extra.rerolls - rerolls)
-        if G.GAME.current_round.free_rerolls < 0 then G.GAME.current_round.free_rerolls = 0 end
-        calculate_reroll_cost(true)
-      end
-      card.ability.extra.rerolls = rerolls
-    end
-  end,
-  set_ability = function(self, card, initial, delay_sprites)
-    if initial then
-      if G.playing_cards then
-        local glass_count = 0
-        for k, v in pairs(G.playing_cards) do
-          if v.ability.name == 'Glass Card' then
-            glass_count = glass_count + 1
-          end
-        end
-        
-        card.ability.extra.rerolls = math.max(glass_count, 1)
-      else
-        card.ability.extra.rerolls = 1
-      end
-    end
-  end
 }
 -- Gliscor 472
 -- Mamoswine 473
@@ -503,7 +440,7 @@ local porygonz={
     end
   end,
   remove_from_deck = function(self, card, from_debuff)
-    if not from_debuff then
+    if not from_debuff or (card.ability.perishable and card.ability.perish_tally <= 0) then
       if not G.GAME.energy_plus then
         G.GAME.energy_plus = 0
       else
@@ -516,8 +453,46 @@ local porygonz={
 -- Probopass 476
 -- Dusknoir 477
 -- Froslass 478
+local froslass={
+  name = "froslass",
+  pos = {x = 6, y = 11},
+  config = {extra = {debt = 15}},
+  loc_vars = function(self, info_queue, center)
+    type_tooltip(self, info_queue, center)
+    return {vars = {center.ability.extra.debt}}
+  end,
+  rarity = "poke_safari",
+  cost = 8,
+  stage = "One",
+  ptype = "Water",
+  atlas = "Pokedex4",
+  perishable_compat = true,
+  blueprint_compat = true,
+  eternal_compat = true,
+  calculate = function(self, card, context)
+    if context.cardarea == G.jokers and context.scoring_hand then
+      if context.joker_main then
+        if G.GAME.dollars < 0 and #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit then
+          local _card = create_card('Item', G.consumeables, nil, nil, nil, nil, nil)
+          _card:add_to_deck()
+          G.consumeables:emplace(_card)
+        end
+      end
+    end
+  end,
+  add_to_deck = function(self, card, from_debuff)
+    if not from_debuff then
+      G.GAME.bankrupt_at = G.GAME.bankrupt_at - card.ability.extra.debt
+    end
+  end,
+  remove_from_deck = function(self, card, from_debuff)
+    if not from_debuff then
+      G.GAME.bankrupt_at = G.GAME.bankrupt_at + card.ability.extra.debt
+    end
+  end,
+}
 -- Rotom 479
 -- Uxie 480
 return {name = "Pokemon Jokers 451-480", 
-        list = {mantyke, magnezone, lickilicky, rhyperior, tangrowth, electivire, magmortar, leafeon, glaceon, porygonz},
+        list = {mantyke, magnezone, lickilicky, rhyperior, tangrowth, electivire, magmortar, leafeon, glaceon, porygonz, froslass},
 }

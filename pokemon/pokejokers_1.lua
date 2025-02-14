@@ -54,7 +54,7 @@ local bulbasaur={
 local ivysaur={
   name = "ivysaur", 
   pos = {x = 1, y = 0}, 
-  config = {extra = {money_mod = 1, earned = 0, h_size = 1}},
+  config = {extra = {money_mod = 1, earned = 0, h_size = 2}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
 		return {vars = {center.ability.extra.money_mod, center.ability.extra.earned, center.ability.extra.h_size, localize(G.GAME.current_round.bulb1card and G.GAME.current_round.bulb1card.rank or "Ace", 'ranks'), center.ability.extra.money_mod + 1}}
@@ -112,7 +112,7 @@ local ivysaur={
 local venusaur={
   name = "venusaur", 
   pos = {x = 2, y = 0}, 
-  config = {extra = {money_mod = 2, earned = 0, h_size = 1}},
+  config = {extra = {money_mod = 2, earned = 0, h_size = 3}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
 		return {vars = {center.ability.extra.money_mod, center.ability.extra.earned, center.ability.extra.h_size, localize(G.GAME.current_round.bulb1card and G.GAME.current_round.bulb1card.rank or "Ace", 'ranks'                   )}}
@@ -296,12 +296,16 @@ local charizard={
     end
   end,
   add_to_deck = function(self, card, from_debuff)
+    if not from_debuff then
       G.GAME.round_resets.discards = G.GAME.round_resets.discards + card.ability.extra.d_size
       ease_discard(card.ability.extra.d_size)
+    end
   end,
   remove_from_deck = function(self, card, from_debuff)
+    if not from_debuff then
       G.GAME.round_resets.discards = G.GAME.round_resets.discards - card.ability.extra.d_size
       ease_discard(-card.ability.extra.d_size)
+    end
   end
   }
 local squirtle={
@@ -328,22 +332,15 @@ local squirtle={
           chip_mod = card.ability.extra.chips
         }
       end
-    elseif not context.repetition and not context.individual and context.end_of_round and not context.blueprint then
-        card.ability.extra.chips = card.ability.extra.chips + (card.ability.extra.chip_mod * G.GAME.current_round.hands_left)
-        if card.ability.extra.chips == 30 then
-          local eval = function(card) return not card.REMOVED end
-          juice_card_until(card, eval, true)
-        end
-        if card.ability.extra.chips >= 32 then
-          return {
-            message = evolve (self, card, context, 'j_poke_wartortle')
-          }
-        else
-          return {
-            message = localize('k_upgrade_ex'),
-            colour = G.C.CHIPS
-          }
-        end
+    end
+    if context.end_of_round and not context.repetition and not context.individual and not context.blueprint then
+      card.ability.extra.chips = card.ability.extra.chips + (card.ability.extra.chip_mod * G.GAME.current_round.hands_left)
+      local evolved = scaling_evo(self, card, context, "j_poke_wartortle", card.ability.extra.chips, 32)
+      if evolved then
+        return evolved
+      else
+        card_eval_status_text(card, 'extra', nil, nil, nil, {message = localize("k_upgrade_ex")})
+      end
     end
   end,
   add_to_deck = function(self, card, from_debuff)
@@ -378,22 +375,15 @@ local wartortle={
           chip_mod = card.ability.extra.chips
         }
       end
-    elseif not context.repetition and not context.individual and context.end_of_round and not context.blueprint then
-        card.ability.extra.chips = card.ability.extra.chips + (card.ability.extra.chip_mod * G.GAME.current_round.hands_left)
-        if card.ability.extra.chips == 68 then
-          local eval = function(card) return not card.REMOVED end
-          juice_card_until(card, eval, true)
-        end
-        if card.ability.extra.chips >= 72 then
-          return {
-            message = evolve (self, card, context, 'j_poke_blastoise')
-          }
-        else
-          return {
-            message = localize('k_upgrade_ex'),
-            colour = G.C.CHIPS
-          }
-        end
+    end
+    if context.end_of_round and not context.repetition and not context.individual and not context.blueprint then
+      card.ability.extra.chips = card.ability.extra.chips + (card.ability.extra.chip_mod * G.GAME.current_round.hands_left)
+      local evolved = scaling_evo(self, card, context, "j_poke_blastoise", card.ability.extra.chips, 72)
+      if evolved then
+        return evolved
+      else
+        card_eval_status_text(card, 'extra', nil, nil, nil, {message = localize("k_upgrade_ex")})
+      end
     end
   end,
   add_to_deck = function(self, card, from_debuff)
@@ -740,7 +730,7 @@ local raticate={
   config = {extra = {retriggers = 3, chips2 = 10}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
-    return {vars = {center.ability.extra.retriggers}}
+    return {vars = {center.ability.extra.retriggers, center.ability.extra.chips2}}
   end,
   rarity = 2, 
   cost = 6, 
@@ -750,7 +740,7 @@ local raticate={
   blueprint_compat = true,
   calculate = function(self, card, context)
     if context.repetition and context.cardarea == G.play then
-      if (context.other_card == context.scoring_hand[1]) or (context.other_card == context.scoring_hand[2]) or (context.other_card == context.scoring_hand[3]) then
+      if (context.other_card == context.scoring_hand[1]) or (context.other_card == context.scoring_hand[2]) or (context.other_card == context.scoring_hand[3]) or (context.other_card == context.scoring_hand[4]) or (context.other_card == context.scoring_hand[5])  then
         context.other_card.ability.perma_bonus = context.other_card.ability.perma_bonus or 0
         context.other_card.ability.perma_bonus = context.other_card.ability.perma_bonus + card.ability.extra.chips2
         return {
@@ -943,7 +933,7 @@ local pikachu={
 local raichu={
   name = "raichu", 
   pos = {x = 12, y = 1}, 
-  config = {extra={money = 2, threshold = 120, plus_slot = false, money_limit = 16}},
+  config = {extra={money = 2, threshold = 120, plus_slot = false, money_limit = 26}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
     if not center.edition or (center.edition and not center.edition.negative) then
@@ -990,7 +980,6 @@ local sandshrew={
         if v.shattered and card.ability.extra.glass_restored <= 0 then
           card_to_copy = v
           local copy = copy_card(card_to_copy, nil, nil, G.playing_card)
-          copy:set_ability(G.P_CENTERS.m_glass, nil, true)
           copy:add_to_deck()
           G.deck.config.card_limit = G.deck.config.card_limit + 1
           table.insert(G.playing_cards, copy)
@@ -1008,12 +997,14 @@ local sandshrew={
           card.ability.extra.glass_restored = card.ability.extra.glass_restored + 1
         end
       end
-      return {
-        message = localize('k_copied_ex'),
-        colour = G.C.CHIPS,
-        card = card,
-        playing_cards_created = {true}
-      }
+      if card_to_copy then
+        return {
+          message = localize('k_copied_ex'),
+          colour = G.C.CHIPS,
+          card = card,
+          playing_cards_created = {true}
+        }
+      end
     end
     if context.cardarea == G.jokers and context.scoring_hand then
       if context.joker_main then
@@ -1065,7 +1056,6 @@ local sandslash={
         if v.shattered and card.ability.extra.glass_restored <= 0 then
           card_to_copy = v
           local copy = copy_card(card_to_copy, nil, nil, G.playing_card)
-          copy:set_ability(G.P_CENTERS.m_glass, nil, true)
           copy:add_to_deck()
           G.deck.config.card_limit = G.deck.config.card_limit + 1
           table.insert(G.playing_cards, copy)
@@ -1083,12 +1073,14 @@ local sandslash={
           card.ability.extra.glass_restored = card.ability.extra.glass_restored + 1
         end
       end
-      return {
-        message = localize('k_copied_ex'),
-        colour = G.C.CHIPS,
-        card = card,
-        playing_cards_created = {true}
-      }
+      if card_to_copy then
+        return {
+          message = localize('k_copied_ex'),
+          colour = G.C.CHIPS,
+          card = card,
+          playing_cards_created = {true}
+        }
+      end
     end
     if context.cardarea == G.jokers and context.scoring_hand then
       if context.joker_main then

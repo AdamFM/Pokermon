@@ -389,7 +389,7 @@ local bellsprout={
 local weepinbell={
   name = "weepinbell", 
   pos = {x = 4, y = 5},
-  config = {extra = {chips = 32, chips2 = 7}},
+  config = {extra = {chips = 32}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
     info_queue[#info_queue+1] = G.P_CENTERS.c_poke_leafstone
@@ -408,11 +408,7 @@ local weepinbell={
          context.other_card:get_id() == 4 or 
          context.other_card:get_id() == 6 or 
          context.other_card:get_id() == 8 or 
-         context.other_card:get_id() == 10 or 
-         context.other_card:get_id() == 14 then
-          
-          context.other_card.ability.perma_bonus = context.other_card.ability.perma_bonus or 0
-          context.other_card.ability.perma_bonus = context.other_card.ability.perma_bonus + card.ability.extra.chips2
+         context.other_card:get_id() == 10 then
           return {
             message = localize{type = 'variable', key = 'a_chips', vars = {card.ability.extra.chips}}, 
             colour = G.C.CHIPS,
@@ -427,7 +423,7 @@ local weepinbell={
 local victreebel={
   name = "victreebel", 
   pos = {x = 5, y = 5},
-  config = {extra = {chips = 20, retriggers = 1, chips2 = 10}},
+  config = {extra = {chips = 10, retriggers = 1, chips2 = 10}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
 		return {vars = {center.ability.extra.chips}}
@@ -446,6 +442,8 @@ local victreebel={
          context.other_card:get_id() == 8 or 
          context.other_card:get_id() == 10 or 
          context.other_card:get_id() == 14 then
+          context.other_card.ability.perma_bonus = context.other_card.ability.perma_bonus or 0
+          context.other_card.ability.perma_bonus = context.other_card.ability.perma_bonus + card.ability.extra.chips2
           return {
             message = localize{type = 'variable', key = 'a_chips', vars = {card.ability.extra.chips}}, 
             colour = G.C.CHIPS,

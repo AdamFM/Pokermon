@@ -253,9 +253,6 @@ local torchic={
     if context.cardarea == G.jokers and context.scoring_hand then
       if context.joker_main then
         local mult = card.ability.extra.mult * card.ability.extra.cards_discarded 
-        if find_other_poke_or_energy_type(card, "Fire") > 0 or find_other_poke_or_energy_type(card, "Fighting") > 0 then
-          mult = mult * 2
-        end
         card.ability.extra.mult_earned = card.ability.extra.mult_earned + mult
         return {
           message = localize{type = 'variable', key = 'a_mult', vars = {mult}}, 
@@ -267,7 +264,11 @@ local torchic={
     if context.discard and not context.other_card.debuff then
       for i=1, #card.ability.extra.targets do
         if context.other_card:get_id() == card.ability.extra.targets[i].id then
-          card.ability.extra.cards_discarded = card.ability.extra.cards_discarded + 1
+          local discard_plus = 1
+          if find_other_poke_or_energy_type(card, "Fire") > 0 or find_other_poke_or_energy_type(card, "Fighting") > 0 then
+            discard_plus = 2
+          end 
+          card.ability.extra.cards_discarded = card.ability.extra.cards_discarded + discard_plus
           return {
             message = localize{type='variable',key='a_mult',vars={card.ability.extra.mult}},
             colour = G.C.RED,
@@ -326,9 +327,6 @@ local combusken={
     if context.cardarea == G.jokers and context.scoring_hand then
       if context.joker_main then
         local mult = card.ability.extra.mult * card.ability.extra.cards_discarded 
-        if find_other_poke_or_energy_type(card, "Fire") > 0 or find_other_poke_or_energy_type(card, "Fighting") > 0 then
-          mult = mult * 2
-        end
         card.ability.extra.mult_earned = card.ability.extra.mult_earned + mult
         return {
           message = localize{type = 'variable', key = 'a_mult', vars = {mult}}, 
@@ -340,7 +338,11 @@ local combusken={
     if context.discard and not context.other_card.debuff then
       for i=1, #card.ability.extra.targets do
         if context.other_card:get_id() == card.ability.extra.targets[i].id then
-          card.ability.extra.cards_discarded = card.ability.extra.cards_discarded + 1
+          local discard_plus = 1
+          if find_other_poke_or_energy_type(card, "Fire") > 0 or find_other_poke_or_energy_type(card, "Fighting") > 0 then
+            discard_plus = 2
+          end 
+          card.ability.extra.cards_discarded = card.ability.extra.cards_discarded + discard_plus
           return {
             message = localize{type='variable',key='a_mult',vars={card.ability.extra.mult}},
             colour = G.C.RED,
@@ -379,12 +381,14 @@ local combusken={
 local blaziken={
   name = "blaziken",
   pos = {x = 5, y = 0},
-  config = {extra = {Xmult = .2, mult = 1, cards_discarded = 0, targets = {{value = "Ace", id = "14"}, {value = "King", id = "13"}, {value = "Queen", id = "12"}}, d_size = 1}},
+  config = {extra = {Xmult = .15, mult = 1, cards_discarded = 0, targets = {{value = "Ace", id = "14"}, {value = "King", id = "13"}, {value = "Queen", id = "12"}}, d_size = 1}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
     info_queue[#info_queue+1] = {set = 'Other', key = 'nature', vars = {"ranks"}}
-    local card_vars = {center.ability.extra.Xmult, center.ability.extra.d_size, 1 + center.ability.extra.Xmult * center.ability.extra.cards_discarded, center.ability.extra.mult,
-                       center.ability.extra.mult * center.ability.extra.cards_discarded}
+    local card = center
+    local mult = card.ability.extra.mult * card.ability.extra.cards_discarded * (find_other_poke_or_energy_type(card, "Fire") + find_other_poke_or_energy_type(card, "Fighting"))
+    local Xmult = 1 + card.ability.extra.Xmult * card.ability.extra.cards_discarded * (find_other_poke_or_energy_type(card, "Fire") + find_other_poke_or_energy_type(card, "Fighting"))
+    local card_vars = {center.ability.extra.Xmult, center.ability.extra.d_size, Xmult, center.ability.extra.mult, mult}
     add_target_cards_to_vars(card_vars, center.ability.extra.targets)
     return {vars = card_vars}
   end,
@@ -399,11 +403,8 @@ local blaziken={
   calculate = function(self, card, context)
     if context.cardarea == G.jokers and context.scoring_hand then
       if context.joker_main then
-        local mult = card.ability.extra.mult * card.ability.extra.cards_discarded
-        local Xmult = 1 + card.ability.extra.Xmult * card.ability.extra.cards_discarded 
-        if find_other_poke_or_energy_type(card, "Fire") > 0 or find_other_poke_or_energy_type(card, "Fighting") > 0 then
-          Xmult = Xmult * 2
-        end
+        local mult = card.ability.extra.mult * card.ability.extra.cards_discarded * (find_other_poke_or_energy_type(card, "Fire") + find_other_poke_or_energy_type(card, "Fighting"))
+        local Xmult = 1 + card.ability.extra.Xmult * card.ability.extra.cards_discarded * (find_other_poke_or_energy_type(card, "Fire") + find_other_poke_or_energy_type(card, "Fighting"))
         return {
           message = localize('poke_blazekick_ex'), 
           colour = G.C.MULT,

@@ -1,6 +1,6 @@
 --Code for pokemon jokers 91-120
 randomSelect = function(table)
-  for i = 1, 5 do
+  for i = 1, 6 do
       math.random()
   end
   if #table == 0 then
@@ -13,21 +13,21 @@ end
 tipeKartu = function(type)
   local trandom_m = {
     G.P_CENTERS.m_steel,
-    G.P_CENTERS.m_gold,
-    G.P_CENTERS.m_bonus,
-    G.P_CENTERS.m_mult,
-    G.P_CENTERS.m_lucky
+    -- G.P_CENTERS.m_gold,
+    -- G.P_CENTERS.m_bonus,
+    -- G.P_CENTERS.m_mult,
+    -- G.P_CENTERS.m_lucky
   }
   local trandom_e = {
-    {foil = true},
-    {holo = true},
     {polychrome = true}
   }
   local trandom_g = {
       "Red",
-      "Blue",
-      "Gold",
-      "Purple"
+      -- "Blue",
+      -- "Gold",
+      -- "Purple",
+      -- "poke_silver",
+      -- "poke_pink_seal",
   }
 
   if type == "ability" then
@@ -172,6 +172,7 @@ local gengar={
     if not center.edition or (center.edition and not center.edition.negative) then
       info_queue[#info_queue+1] = G.P_CENTERS.e_negative
     end
+    info_queue[#info_queue+1] = G.P_CENTERS.c_poke_megastone
     info_queue[#info_queue+1] = {key = 'percent_chance', set = 'Other', specific_vars = {20}}
     return {vars = {1, center.ability.extra.odds}}
   end,
@@ -218,6 +219,50 @@ local gengar={
                 play_sound('tarot2', 1, 0.4)
                 card:juice_up(0.3, 0.5)
         return true end }))
+      end
+    end
+  end,
+  megas = {"mega_gengar"}
+}
+local mega_gengar ={
+  name = "mega_gengar", 
+  pos = {x = 1, y = 1},
+  soul_pos = { x = 2, y = 1},
+  config = {extra = {xmult = 2, mega_gengar_tally = 0, rounds = 1}},
+  loc_vars = function(self, info_queue, center)
+    type_tooltip(self, info_queue, center)
+    if not center.edition or (center.edition and not center.edition.negative) then
+      info_queue[#info_queue+1] = G.P_CENTERS.e_negative
+    end
+    return {vars = {center.ability.extra.xmult, center.ability.extra.xmult * center.ability.extra.mega_gengar_tally}}
+  end,
+  rarity = "Legendary", 
+  cost = 12, 
+  stage = "Mega", 
+  ptype = "Psychic",
+  atlas = "Megas",
+  eternal_compat = false,
+  blueprint_compat = false,
+  calculate = function(self, card, context)
+    if context.cardarea == G.jokers and context.scoring_hand then
+      if context.joker_main then
+        local temp_xmult = card.ability.extra.xmult * card.ability.extra.mega_gengar_tally
+        if temp_xmult > 0 then
+          return {
+            message = localize{type = 'variable', key = 'a_xmult', vars = {temp_xmult}}, 
+            colour = G.C.XMULT,
+            Xmult_mod = temp_xmult
+          }
+        end
+      end
+    end
+    return level_evo(self, card, context, "j_poke_gengar")
+  end,
+  update = function(self, card, dt)
+    if G.STAGE == G.STAGES.RUN then
+      card.ability.extra.mega_gengar_tally = 0
+      for k, v in pairs(G.jokers.cards) do
+        if v.edition and v.edition.negative then card.ability.extra.mega_gengar_tally = card.ability.extra.mega_gengar_tally + 1 end
       end
     end
   end
@@ -405,8 +450,6 @@ local kingler={
           card_edisi = context.scoring_hand[k].edition.type == 'polychrome'
           sendDebugMessage(context.scoring_hand[k].edition.type)
         end
-        sendDebugMessage('card')
-        sendDebugMessage(k)
         if v:is_face() then 
             faces[#faces+1] = v
             v:set_ability(random_m, nil, true)
@@ -421,7 +464,7 @@ local kingler={
                     return true
                 end
             }))
-        elseif v:get_id() == 14 then
+        elseif v:get_id() == 14 or v:get_id() == 10  then
           v:set_ability(random_m, nil, true)
           if not card_edisi then
             sendDebugMessage('Ace Not polychrome')
@@ -555,7 +598,7 @@ local exeggcute={
 local exeggutor={
   name = "exeggutor", 
   pos = {x = 11, y = 7}, 
-  config = {extra = {mult_mod = 2, Xmult_multi = 1.4, suit = "Hearts", odds = 1}},
+  config = {extra = {mult_mod = 3, Xmult_multi = 1.5, suit = "Hearts", odds = 1}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
     return {vars = {center.ability.extra.mult_mod, center.ability.extra.Xmult_multi, localize(center.ability.extra.suit, 'suits_singular'), 
@@ -961,11 +1004,12 @@ local chansey={
 local tangela={
   name = "tangela", 
   pos = {x = 9, y = 8},
-  config = {extra = {mult = 10, chips = 50, money_mod = 3, odds = 4}},
+  config = {extra = {mult = 10, chips = 50, money_mod = 3, odds = 4, wilds_scored = 0, wilds_goal = 15}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
     info_queue[#info_queue+1] = G.P_CENTERS.m_wild
-    return {vars = {center.ability.extra.mult, center.ability.extra.chips,center.ability.extra.money_mod,''..(G.GAME and G.GAME.probabilities.normal or 1), center.ability.extra.odds}}
+    return {vars = {center.ability.extra.mult, center.ability.extra.chips,center.ability.extra.money_mod,''..(G.GAME and G.GAME.probabilities.normal or 1), center.ability.extra.odds,
+                    center.ability.extra.wilds_scored, center.ability.extra.wilds_goal}}
   end,
   rarity = 2, 
   cost = 6,
@@ -977,6 +1021,7 @@ local tangela={
   calculate = function(self, card, context)
     if context.individual and context.cardarea == G.play and not context.other_card.debuff and not context.end_of_round and
        context.other_card.ability.name == 'Wild Card' then
+        card.ability.extra.wilds_scored = card.ability.extra.wilds_scored + 1
         if pseudorandom('tangela') < G.GAME.probabilities.normal/card.ability.extra.odds then
           G.GAME.dollar_buffer = (G.GAME.dollar_buffer or 0) + card.ability.extra.money_mod
           G.E_MANAGER:add_event(Event({func = (function() G.GAME.dollar_buffer = 0; return true end)}))
@@ -1013,7 +1058,7 @@ local tangela={
           end
         end
     end
-    return deck_enhance_evo(self, card, context, "j_poke_tangrowth", "Wild", .20)
+    return scaling_evo(self, card, context, "j_poke_tangrowth", card.ability.extra.wilds_scored, card.ability.extra.wilds_goal)
   end,
 }
 local kangaskhan={
@@ -1040,7 +1085,7 @@ local kangaskhan={
     end
   end,
   remove_from_deck = function(self, card, from_debuff)
-    if (not from_debuff) or card.ability.perishable then
+    if (not from_debuff) or (card.ability.perishable and card.ability.perish_tally <= 0) then
       G.E_MANAGER:add_event(Event({func = function()
         G.consumeables.config.card_limit = G.consumeables.config.card_limit - card.ability.extra.card_limit
         return true end }))
@@ -1219,5 +1264,5 @@ local staryu={
 }
 
 return {name = "Pokemon Jokers 91-120", 
-        list = { cloyster, gastly, haunter, gengar, onix, drowzee, hypno, krabby, kingler, voltorb, electrode, exeggcute, exeggutor, cubone, marowak, hitmonlee, hitmonchan, lickitung, koffing, weezing,                 rhyhorn, rhydon, chansey, tangela, kangaskhan, horsea, seadra, goldeen, seaking, staryu, },
+        list = { cloyster, gastly, haunter, gengar, mega_gengar, onix, drowzee, hypno, krabby, kingler, voltorb, electrode, exeggcute, exeggutor, cubone, marowak, hitmonlee, hitmonchan, lickitung, koffing, weezing,                 rhyhorn, rhydon, chansey, tangela, kangaskhan, horsea, seadra, goldeen, seaking, staryu, },
 }

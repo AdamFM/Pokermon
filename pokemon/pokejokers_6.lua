@@ -3,7 +3,7 @@ local mew ={
   name = "mew", 
   pos = {x = 12, y = 11},
   soul_pos = { x = 0, y = 12},
-  config = {extra = {percent = 15}},
+  config = {extra = {percent = 55}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
     info_queue[#info_queue+1] = {key = 'e_negative_consumable', set = 'Edition', config = {extra = 1}}
@@ -233,7 +233,7 @@ local crobat={
 local pichu={
   name = "pichu", 
   pos = {x = 0, y = 2},
-  config = {extra={money = 10, Xmult_minus = 1.25, rounds = 2}},
+  config = {extra={money = 10, Xmult_minus = 1.15, rounds = 2}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
     info_queue[#info_queue+1] = {set = 'Other', key = 'baby'}
@@ -266,7 +266,7 @@ local pichu={
 local cleffa={
   name = "cleffa",
   pos = {x = 1, y = 2},
-  config = {extra = {Xmult_minus = 1.25,rounds = 2,}},
+  config = {extra = {Xmult_minus = 1.15,rounds = 2,}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
     info_queue[#info_queue+1] = {set = 'Other', key = 'baby'}
@@ -307,7 +307,7 @@ local cleffa={
 local igglybuff={
   name = "igglybuff",
   pos = {x = 2, y = 2},
-  config = {extra = {Xmult_minus = 1.25,rounds = 2,}},
+  config = {extra = {Xmult_minus = 1.15,rounds = 2,}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
     info_queue[#info_queue+1] = {set = 'Other', key = 'baby'}

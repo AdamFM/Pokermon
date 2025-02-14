@@ -30,7 +30,7 @@ match_indent = true
 target = "functions/state_events.lua"
 pattern = "if next(find_joker('Splash')) then"
 position = "at"
-payload = "if next(find_joker('Splash')) or next(find_joker('magikarp')) or next(find_joker('feebas')) then"
+payload = "if next(find_joker('Splash')) or next(find_joker('magikarp')) or next(find_joker('feebas')) or next(find_joker('gyarados')) then"
 match_indent = true
 
 # Mimikyu Localization Functionality
@@ -97,7 +97,7 @@ target = "card.lua"
 pattern = "local _size = self.ability.extra"
 position = "after"
 payload = '''
-if self.ability.name:find("Pocket") and G.GAME.extra_pocket_picks and G.GAME.extra_pocket_picks > 0 then
+if G.GAME.extra_pocket_picks and G.GAME.extra_pocket_picks > 0 then
   _size = _size + G.GAME.extra_pocket_picks
 end
 '''
@@ -134,6 +134,15 @@ if (self.ability.set == 'Planet' or (self.ability.set == 'Booster' and self.abil
 if (self.ability.set == 'Planet' or (self.ability.set == 'Booster' and self.ability.name:find('Celestial'))) and #find_joker('pidgeotto') > 0 then self.cost = math.max(0, self.cost - 3 * #find_joker('pidgeotto')) end
 if (self.ability.set == 'Planet' or (self.ability.set == 'Booster' and self.ability.name:find('Celestial'))) and #find_joker('pidgeot') > 0 then self.cost = 0 end
 '''
+match_indent = true
+
+#Drain functionality
+[[patches]]
+[patches.pattern]
+target = "card.lua"
+pattern = "self.sell_cost = math.max(1, math.floor(self.cost/2)) + (self.ability.extra_value or 0)"
+position = "after"
+payload = "if self.sell_cost < 1 then self.sell_cost = 1 end"
 match_indent = true
 
 #Deck functionality
@@ -231,7 +240,7 @@ end
 '''
 position = "after"
 payload = '''
-if card.config.center.set == 'Item' or card.config.center.set == 'Energy' then 
+if (card.config.center.set == 'Item' or card.config.center.set == 'Energy') and not card.config.center.helditem then 
   G.E_MANAGER:add_event(Event({
     trigger = 'immediate',
     func = function()
@@ -282,21 +291,4 @@ payload = '''  if name == "Shortcut" then
     name = "Shortcut"
   end'''
 match_indent = true
-
-# Glaceon functionality
-[[patches]]
-[patches.pattern]
-target = "functions/state_events.lua"
-pattern = "G.GAME.current_round.free_rerolls = #chaos"
-position = "after"
-payload = '''
-local glaceon = SMODS.find_card('j_poke_glaceon')
-for k, v in pairs(glaceon) do
-  G.GAME.current_round.free_rerolls = G.GAME.current_round.free_rerolls + v.ability.extra.rerolls
-  v.ability.extra.rerolls_used = 0
-end
-'''
-match_indent = true
-
-# Bonus Mult functionality
 
