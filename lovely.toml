@@ -9,7 +9,7 @@ priority = 0
 target = "functions/misc_functions.lua"
 pattern = "legendary = G.C.RARITY[4],"
 position = "after"
-payload = "poke_safari = G.C.RARITY['poke_safari'],"
+payload = "poke_safari = G.C.RARITY['poke_safari'], poke_mega = G.C.RARITY['poke_mega'],"
 match_indent = true
 
 # Pokemon only functionality
@@ -206,13 +206,15 @@ payload = '''
 if pokermon_config.pokemon_splash then
   local pokemon = {}
   for k, v in pairs(G.P_CENTERS) do
-    if v.set == 'Joker' and v.stage then
+    if v.set == 'Joker' and v.stage and v.discovered then
       table.insert(pokemon, v)
     end
   end
-  local chosen = math.random(#pokemon)
-  local chosencard = pokemon[chosen]
-  SC = Card(G.ROOM.T.w/2 - SC_scale*G.CARD_W/2, 10. + G.ROOM.T.h/2 - SC_scale*G.CARD_H/2, SC_scale*G.CARD_W, SC_scale*G.CARD_H, G.P_CARDS.empty, chosencard)
+  if #pokemon > 0 then
+    local chosen = math.random(#pokemon)
+    local chosencard = pokemon[chosen]
+    SC = Card(G.ROOM.T.w/2 - SC_scale*G.CARD_W/2, 10. + G.ROOM.T.h/2 - SC_scale*G.CARD_H/2, SC_scale*G.CARD_W, SC_scale*G.CARD_H, G.P_CARDS.empty, chosencard)
+  end
 end
 '''
 match_indent = true
@@ -291,4 +293,35 @@ payload = '''  if name == "Shortcut" then
     name = "Shortcut"
   end'''
 match_indent = true
+
+#Joker emplace patch
+[[patches]]
+[patches.pattern]
+target = 'cardarea.lua'
+pattern = '''self.cards[#self.cards+1] = card'''
+position = 'at'
+payload = '''  
+if type(location) == "number" then
+  table.insert(self.cards, location, card)
+else
+  self.cards[#self.cards+1] = card
+end
+'''
+match_indent = true
+
+# Mega Gengar functionality
+[[patches]]
+[patches.pattern]
+target = "functions/common_events.lua"
+pattern = "local edition = poll_edition('edi'..(key_append or '')..G.GAME.round_resets.ante)"
+position = "after"
+payload = '''
+if edition and ((area == G.shop_jokers) or (area == G.pack_cards)) and next(SMODS.find_card('j_poke_mega_gengar')) and edition == "e_polychrome" then
+  sendDebugMessage(edition)
+  sendDebugMessage(inspect(edition))
+  edition = {negative = true}
+end
+'''
+match_indent = true
+
 

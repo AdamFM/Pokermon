@@ -9,7 +9,7 @@
 local mantyke={
   name = "mantyke",
   pos = {x = 1, y = 5},
-  config = {extra = {chips = 20, Xmult_minus = 1.25, rounds = 2, chip_total = 0,}},
+  config = {extra = {chips = 20, Xmult_minus = 0.95, rounds = 2, chip_total = 0,}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
     info_queue[#info_queue+1] = {set = 'Other', key = 'designed_by', vars = {"FlamingRok"}}
@@ -455,7 +455,7 @@ local porygonz={
 -- Froslass 478
 local froslass={
   name = "froslass",
-  pos = {x = 6, y = 11},
+  pos = {x = 7, y = 6},
   config = {extra = {debt = 15}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
@@ -472,7 +472,13 @@ local froslass={
   calculate = function(self, card, context)
     if context.cardarea == G.jokers and context.scoring_hand then
       if context.joker_main then
-        if G.GAME.dollars < 0 and #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit then
+        local in_debt = nil
+        if (SMODS.Mods["Talisman"] or {}).can_load then
+          in_debt = to_big(G.GAME.dollars) < to_big(0)
+        else
+          in_debt = G.GAME.dollars < 0
+        end
+        if in_debt and #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit then
           local _card = create_card('Item', G.consumeables, nil, nil, nil, nil, nil)
           _card:add_to_deck()
           G.consumeables:emplace(_card)

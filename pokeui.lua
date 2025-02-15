@@ -5,7 +5,8 @@ local restart_toggles_left = {
                 }
                 
 local restart_toggles_right = { 
-  {ref_value = "pokemon_num", label = "poke_settings_pokedex_number"}, {ref_value = "pokemon_splash", label = "poke_settings_pokemon_splash"}, 
+  {ref_value = "pokemon_splash", label = "poke_settings_pokemon_splash"}, 
+  {ref_value = "pokemon_discovery", label = "poke_settings_pokemon_discovery", tooltip = {set = 'Other', key = 'discovery_tooltip'}}
 }
 
 local no_restart_toggles = {{ref_value = "pokemon_only", label = "poke_settings_pokemon_only"}, {ref_value = "shiny_playing_cards", label = "poke_settings_shiny_playing_cards"},
@@ -24,6 +25,9 @@ local create_menu_toggles = function (parent, toggles)
             NFS.write(mod_dir.."/config.lua", STR_PACK(pokermon_config))
           end,
     })
+    if v.tooltip then
+      parent.nodes[#parent.nodes].config.detailed_tooltip = v.tooltip
+    end
   end
 end
 
@@ -255,6 +259,33 @@ SMODS.current_mod.extra_tabs = function()
               {
                 n = G.UIT.T,
                 config = {
+                  text = localize("poke_credits_sound"),
+                  shadow = true,
+                  scale = scale * 0.8,
+                  colour = G.C.UI.TEXT_LIGHT
+                }
+              },
+              {
+                n = G.UIT.T,
+                config = {
+                  text = "Dread",
+                  shadow = true,
+                  scale = scale * 0.8,
+                  colour = G.C.BLUE
+                }
+              }
+            }
+          },
+          {
+            n = G.UIT.R,
+            config = {
+              padding = 0,
+              align = "cm"
+            },
+            nodes = {
+              {
+                n = G.UIT.T,
+                config = {
                   text = localize("poke_credits_developer"),
                   shadow = true,
                   scale = scale * 0.8,
@@ -291,7 +322,7 @@ SMODS.current_mod.extra_tabs = function()
               {
                 n = G.UIT.T,
                 config = {
-                  text = "Xilande, Mus, Lemmanade",
+                  text = "Xilande, Mus, Lemmanade, PrincessRoxie, Catzzadilla",
                   shadow = true,
                   scale = scale * 0.8,
                   colour = G.C.BLUE
@@ -426,7 +457,7 @@ end
 local G_UIDEF_use_and_sell_buttons_ref=G.UIDEF.use_and_sell_buttons
     function G.UIDEF.use_and_sell_buttons(card)
         if (card.area == G.pack_cards and G.pack_cards) and card.ability.consumeable then --Add a use button
-            if (G.STATE == G.STATES.SMODS_BOOSTER_OPENED and SMODS.OPENED_BOOSTER.label:find("Pocket")) or (G.GAME.poke_save_all) then
+            if (G.STATE == G.STATES.SMODS_BOOSTER_OPENED and SMODS.OPENED_BOOSTER.label:find("Pocket")) or (G.GAME.poke_save_all) or (card.ability.name == 'megastone') then
                 return {
                     n=G.UIT.ROOT, config = {padding = -0.1,  colour = G.C.CLEAR}, nodes={
                       {n=G.UIT.R, config={ref_table = card, r = 0.08, padding = 0.1, align = "bm", minw = 0.5*card.T.w - 0.15, minh = 0.7*card.T.h, maxw = 0.7*card.T.w - 0.15, hover = true, shadow = true, colour = G.C.UI.BACKGROUND_INACTIVE, one_press = true, button = 'use_card', func = 'can_use_consumeable'}, nodes={

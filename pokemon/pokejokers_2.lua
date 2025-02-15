@@ -45,6 +45,15 @@ local nidoqueen={
     if context.joker_main then
       local chip_temp_total = card.ability.extra.chip_total
       card.ability.extra.chip_total = 0
+      local xchips = 1 + card.ability.extra.Xmult_mod * 2
+      local chips = nil
+      local msg = localize{type = 'variable', key = 'a_xchips', vars = {xchips}}
+      -- if steammodded isn't updated
+      if msg == "ERROR" then
+        msg = "X"..tostring(xchips).." Chips"
+        chips = (xchips - 1) * hand_chips
+        xchips = nil
+      end
       if chip_temp_total > 0 then
         return {
           message = localize('poke_nido_ex'),
@@ -645,7 +654,7 @@ local paras={
 local parasect={
   name = "parasect", 
   pos = {x = 7, y = 3},
-   config = {extra = {mult = 0, mult_mod = 3, mult_mod2 = 1}},
+   config = {extra = {mult = 0, mult_mod = 3, mult_mod2 = 0.5}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
 		return {vars = {center.ability.extra.mult, center.ability.extra.mult_mod, center.ability.extra.mult_mod2}}
@@ -667,7 +676,7 @@ local parasect={
             colour = G.C.MULT
           }
         elseif context.before and card.ability.extra.mult > 0 then
-          card.ability.extra.mult = card.ability.extra.mult + card.ability.extra.mult_mod2
+          card.ability.extra.mult = card.ability.extra.mult - card.ability.extra.mult_mod2
           return {
             message = localize{type='variable',key='a_mult_minus',vars={card.ability.extra.mult_mod2}},
             colour = G.C.RED,

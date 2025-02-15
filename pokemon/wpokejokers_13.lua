@@ -18,9 +18,15 @@ local snorunt={
   eternal_compat = true,
   calculate = function(self, card, context)
     local evolve = item_evo(self, card, context, "j_poke_froslass")
+    local in_debt = nil
+    if (SMODS.Mods["Talisman"] or {}).can_load then
+      in_debt = to_big(G.GAME.dollars) < to_big(0)
+    else
+      in_debt = G.GAME.dollars < 0
+    end
     if evolve then
       return evolve
-    elseif G.GAME.dollars < 0 then
+    elseif in_debt then
       return level_evo(self, card, context, "j_poke_glalie")
     end
   end,
