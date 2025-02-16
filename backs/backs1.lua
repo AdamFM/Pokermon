@@ -27,6 +27,19 @@ local pokemondeck = {
   end,
 	pos = { x = 0, y = 0 },
 	atlas = "pokedeck",
+  
+  apply = function(self)
+    G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.8, func = function()
+      local card = nil
+        play_sound('timpani')
+        card = create_card('Joker', G.jokers, nil, nil, nil, nil, 'j_poke_nidoqueen', 'Nidoqueen')
+        card:add_to_deck()
+        G.jokers:emplace(card)
+        card:start_materialize()
+        card:set_edition()
+        G.GAME.joker_buffer = 0
+    return true end }))
+  end,
 }
 local luminousdeck = {
 	name = "luminousdeck",

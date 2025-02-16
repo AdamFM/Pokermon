@@ -2,10 +2,10 @@
 local nidoqueen={
   name = "nidoqueen", 
   pos = {x = 4, y = 2}, 
-  config = {extra = {chips = 85, chip_total = 0, h_size = 1, Xmult_mod = 0.5}},
+  config = {extra = {chips = 85, chip_total = 0, h_size = 2, Xchips = 1.25}},
   loc_vars = function(self, info_queue, center)
     type_tooltip(self, info_queue, center)
-    return {vars = {center.ability.extra.chips, center.ability.extra.h_size, center.ability.extra.Xmult_mod}}
+    return {vars = {center.ability.extra.chips, center.ability.extra.h_size, center.ability.extra.Xchips}}
   end,
   rarity = "poke_safari", 
   cost = 10, 
@@ -23,20 +23,12 @@ local nidoqueen={
             card = card,
           }
         else
-            card.ability.extra.chip_total = card.ability.extra.chip_total + card.ability.extra.chips
-            local xchips = 1 + card.ability.extra.Xmult_mod * 2
-            local chips = nil
-            local msg = localize{type = 'variable', key = 'a_xchips', vars = {xchips}}
-            -- if steammodded isn't updated
-            if msg == "ERROR" then
-              msg = "X"..tostring(xchips).." Chips"
-              chips = (xchips - 1) * hand_chips
-              xchips = nil
-            end
+          card.ability.extra.chip_total = card.ability.extra.chip_total + card.ability.extra.chips
             return {
-              message = localize{type = 'variable', key = 'a_chips', vars = {card.ability.extra.chips}}, 
-              colour = G.C.CHIPS,
-              Xchip_mod = xchips,
+              -- message = localize{type = 'variable', key = 'a_chips', vars = {card.ability.extra.chips}},
+              -- colour = G.C.CHIPS,
+              chips = card.ability.extra.chips,
+              xchips  = card.ability.extra.Xchips,
               card = card,
             }
         end
@@ -45,21 +37,11 @@ local nidoqueen={
     if context.joker_main then
       local chip_temp_total = card.ability.extra.chip_total
       card.ability.extra.chip_total = 0
-      local xchips = 1 + card.ability.extra.Xmult_mod * 2
-      local chips = nil
-      local msg = localize{type = 'variable', key = 'a_xchips', vars = {xchips}}
-      -- if steammodded isn't updated
-      if msg == "ERROR" then
-        msg = "X"..tostring(xchips).." Chips"
-        chips = (xchips - 1) * hand_chips
-        xchips = nil
-      end
       if chip_temp_total > 0 then
         return {
           message = localize('poke_nido_ex'),
-          colour = G.C.CHIPS,
-          Xchip_mod = xchips,
-          chip_mod = chip_temp_total
+          chip_mod = chip_temp_total,
+          xchips  = card.ability.extra.Xchips
         }
       end
     end

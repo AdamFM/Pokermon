@@ -13,21 +13,21 @@ end
 tipeKartu = function(type)
   local trandom_m = {
     G.P_CENTERS.m_steel,
-    -- G.P_CENTERS.m_gold,
-    -- G.P_CENTERS.m_bonus,
-    -- G.P_CENTERS.m_mult,
-    -- G.P_CENTERS.m_lucky
+    G.P_CENTERS.m_gold,
+    G.P_CENTERS.m_bonus,
+    G.P_CENTERS.m_mult,
+    G.P_CENTERS.m_lucky
   }
   local trandom_e = {
     {polychrome = true}
   }
   local trandom_g = {
       "Red",
-      -- "Blue",
-      -- "Gold",
-      -- "Purple",
-      -- "poke_silver",
-      -- "poke_pink_seal",
+      "Blue",
+      "Gold",
+      "Purple",
+      "poke_silver",
+      "poke_pink_seal",
   }
 
   if type == "ability" then
@@ -447,7 +447,7 @@ local kingler={
                     return true
                 end
             }))
-        elseif v:get_id() == 14 or v:get_id() == 10  then
+        elseif v:get_id() == 14 then
           v:set_ability(random_m, nil, true)
           if not card_edisi then
             v:set_edition(random_e, true, true)
@@ -459,6 +459,18 @@ local kingler={
                   return true
               end
           }))
+        elseif v:get_id() == 10 then
+            v:set_ability(G.P_CENTERS.m_wild, nil, true)
+            if not card_edisi then
+              v:set_edition(random_e, true, true)
+            end
+            v:set_seal(random_g, true, true)
+            G.E_MANAGER:add_event(Event({
+                func = function()
+                    v:juice_up()
+                    return true
+                end
+            }))
         end
       end
       if #faces > 0 then 
